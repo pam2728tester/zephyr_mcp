@@ -1,0 +1,28 @@
+# Zephyr Squad & Jira Server/DC Test Management MCP Server
+> An enterprise Model Context Protocol (MCP) server for automated test synthesis and Jira-Zephyr traceability.
+
+## Core Capabilities
+- Parse Acceptance Criteria from Jira Stories (Plain text, Jira Wiki, ADF).
+- Synthesize QA test cases: POSITIVE, NEGATIVE, BOUNDARY, SECURITY, EDGE_CASE.
+- Two-Phase Human-in-the-Loop workflow (Phase 1: safe read-only preview, Phase 2: controlled Jira/ZAPI writes).
+- Bidirectional Jira issue linking ('Tests' / 'Tested by').
+- Zephyr Squad ZAPI integration (/rest/zapi/latest/teststep/{issueId}).
+
+## File Map & Responsibilities
+- `src/zephyr_jira_mcp/server.py`: MCPServer entrypoint declaring tools, resources, and prompt templates.
+- `src/zephyr_jira_mcp/models.py`: Pydantic v2 domain schemas (TestStepSpec, TestCaseSpec, TestPlanSpec, PublishResult).
+- `src/zephyr_jira_mcp/jira_client.py`: Async client for Jira Server/DC REST API v2 (get_issue, create_test_issue, link_issue_to_story).
+- `src/zephyr_jira_mcp/zephyr_client.py`: Async client for Zephyr Squad ZAPI (get_test_steps, add_test_step, add_test_steps_batch).
+- `src/zephyr_jira_mcp/story_analyzer.py`: Story requirements and Acceptance Criteria extractor.
+- `src/zephyr_jira_mcp/test_synthesizer.py`: Test case synthesis engine with boundary value analysis and idempotency hashing.
+- `src/zephyr_jira_mcp/plan_manager.py`: Test plan storage cache and two-phase publishing orchestrator.
+- `src/zephyr_jira_mcp/config.py`: Environment configuration and auth header resolution.
+- `tests/`: 21 pytest unit, mock, and integration test suites.
+
+## Available MCP Tools
+1. `get_jira_story(story_key: str) -> str`: Fetch story details, criteria, and linked tests.
+2. `generate_test_plan(story_key: str, max_cases: int = 8, include_negative: bool = True, include_boundary: bool = True, include_security: bool = False) -> str`: Safe Phase 1 test plan generation.
+3. `review_test_plan(plan_id: str) -> str`: Inspect cached test plan.
+4. `publish_test_plan(plan_id: str, dry_run: bool = False) -> str`: Phase 2 publish to Jira & Zephyr.
+5. `create_single_test_case(story_key: str, title: str, summary: str, description: str, preconditions: str, steps: list[dict], priority: str = "Medium", dry_run: bool = False) -> str`: Ad-hoc test creation.
+6. `verify_story_traceability(story_key: str) -> str`: Audit test coverage and step verification.
