@@ -1,0 +1,23 @@
+[project]
+name = "zephyr-jira-mcp"
+version = "1.0.0"
+description = "End-to-End Model Context Protocol (MCP) server for Zephyr Squad test case creation and Jira Story traceability."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "pydantic>=2.0.0",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.scripts]
+zephyr-jira-mcp = "zephyr_jira_mcp.server:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

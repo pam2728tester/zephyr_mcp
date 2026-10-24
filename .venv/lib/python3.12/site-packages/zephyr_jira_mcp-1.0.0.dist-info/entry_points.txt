@@ -1,0 +1,2 @@
+[console_scripts]
+zephyr-jira-mcp = zephyr_jira_mcp.server:main
